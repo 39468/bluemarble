@@ -27,6 +27,31 @@
 
 
 
+void printmap(); // 맵을 출력해주는 함수
+void printna(); // 맵 위에 도시이름을 출력해주는 함수
+int dice_cast(); // 주사위 숫자 생성해주는 함수
+void dice_print(); // dice_cast()로 생성한 주사위 눈의 수에 따른 주사위 모양 출력
+void gotoxy(int x, int y); // 좌표 설정 함수
+int getch(void); // getch
+void insert_playername(int a); // 시작 시 플레이어 이름 입력하는 함수
+void finish_bonus(int a); // 시작점에 도착해서 완주 시 완주보너스를 지급하는 함수
+void player_state(); // 게임 시작 시 사용자 정보 초기화한걸 출력해주는 함수
+void icon_print(int a); // 플레이어의 말이 위치한 말판 위에 플레이어의 말을 출력만 해주는 함수
+void development_mark(int a); // 도시의 발전도를 표시하는 함수 / 구매전 0, 도시구매후 1, 주택건설후 2, 빌라건설후 3, 아파트건설 후 4
+void clear(); // 플레이어들의 상태 정보, 주사위, 공지를 지우는 함수
+void icon_movement(int a); // 주사위를 굴리고(dice_cast, dice_print), 말판위에 말 움직이는(icon_movement) 함수
+void gold_key(int a); // 황금열쇠 함수
+void trade(int a); // 사용자의 위치에 따른 행동을 하는 함수
+// 사회복지기금 접수, 사회복지기금 수령 / 무인도(island) / 도시구매 / 주택, 빌라, 아파트 건설 / 통행료 납부 거래 / 인수(mna) 등
+void player_state_update(); // 플레이어의 잔고, 보유 건물 수를 턴이 바뀔 때마다 업데이트하는 함수
+void bankruptcy(int a); // 파산 검사 후 도시 매각 함수 (=도시의 소유주, 발전도 초기화)
+void mna(int a); // 도시 인수를 하고, 도시의 새로운 소유주의 색으로 발전도를 출력하는(development_mark) 함수
+void island(int a); // 무인도 함수
+int yes_or_no(); // 도시 구입, 건물 건설, mna, 도시매각 시 사용자의 의사를 묻는 함수
+void ending(int a); // 게임종료 조건이 달성되면(파산) 게임을 끝내고 승리자의 이름과 재산, 보유한 도시 수를 출력해주는 함수
+
+
+
 typedef struct { // 플레이어 정보 구조체
 char name[20]; // 플레이어의 이름
 int money; // 플레이어의 소지금
@@ -70,14 +95,14 @@ City city[BOARD] = {
 {"인천", {24, 6, 8, 10}, 0, "없음", {79, 87}, {9, 9}, 79, 7}, // 6 인천
 {"황금열쇠", {0, 0, 0, 0}, 0, "없음", {79, 87}, {5, 5}, 79, 3}, // 7 황금열쇠
 {"춘천", {30, 6, 8, 10}, 0, "없음", {68, 76}, {5, 5}, 68, 3}, // 8 춘천
-{"사회복지기금 접수처", {0, 0, 0, 0}, 0, "없음", {57, 66}, {5, 5}, 57, 3}, // 9 사회복지기금 접수처
+{"사회복지기금 접수처", {0, 0, 0, 0}, 0, "없음", {57, 65}, {5, 5}, 57, 3}, // 9 사회복지기금 접수처
 {"평창", {37, 15, 13, 9}, 0, "없음", {46, 54}, {5, 5}, 46, 3}, // 10 평창
 {"강원", {15, 4, 6, 8}, 0, "없음", {35, 43}, {5, 5}, 35, 3}, // 11 강원
 {"강릉", {11, 4, 6, 8}, 0, "없음", {24, 32}, {5, 5}, 24, 3}, // 12 강릉
 {"속초", {29, 6, 8, 10}, 0, "없음", {13, 21}, {5, 5}, 13, 3}, // 13 속초
 {"황금열쇠", {0, 0, 0, 0}, 0, "없음", {2, 10}, {5, 5}, 2, 3}, // 14 황금열쇠
 {"태안", {22, 6, 8, 10}, 0, "없음", {2, 10}, {9, 9}, 2, 7}, // 15 태안
-{"사회복지기금 수령처", {0, 0, 0, 0}, 0, "없음", {2, 11}, {13, 13}, 2, 11}, // 16 사회복지기금 수령처
+{"사회복지기금 수령처", {0, 0, 0, 0}, 0, "없음", {2, 10}, {13, 13}, 2, 11}, // 16 사회복지기금 수령처
 {"단양", {5, 1, 2, 3}, 0, "없음", {2, 10}, {17, 17}, 2, 15}, // 17 단양
 {"황금열쇠", {0, 0, 0, 0}, 0, "없음", {2, 10}, {21, 21}, 2, 19}, // 18 황금열쇠
 {"대전", {51, 17, 22, 30}, 0, "없음", {2, 10}, {25, 25}, 2, 23}, // 19 대전
@@ -143,7 +168,7 @@ printf("└──────────┴──────────┴─
 
 
 
-void printna(){
+void printna() {
 int i;
 gotoxy(3,4);
 printf("황금열쇠");
@@ -247,7 +272,7 @@ else if(dice_num1 == 2) {
 gotoxy(34,15);
 printf("┌─────────┐");
 gotoxy(34,16);
-printf("│ ●	    │\n");
+printf("│ ●	   │\n");
 gotoxy(34,17);
 printf("│	   │\n");
 gotoxy(34,18);
@@ -260,7 +285,7 @@ else if(dice_num1 == 3) {
 gotoxy(34,15);
 printf("┌─────────┐");
 gotoxy(34,16);
-printf("│ ●	  │\n");
+printf("│ ●	   │\n");
 gotoxy(34,17);
 printf("│   ●     │\n");
 gotoxy(34,18);
@@ -275,7 +300,7 @@ printf("┌─────────┐");
 gotoxy(34,16);
 printf("│ ●    ●  │\n");
 gotoxy(34,17);
-printf("│	    │\n");
+printf("│	  │\n");
 gotoxy(34,18);
 printf("│ ●    ●  │\n");
 gotoxy(34,19);
@@ -426,41 +451,16 @@ return ch;
 
 
 
-/*int kbhit(void) {
-struct termios oldt, newt;
-int ch;
-int oldf;
-
-tcgetattr(STDIN_FILENO, &oldt);
-newt = oldt;
-newt.c_lflag &= ~(ICANON | ECHO);
-tcsetattr(STDIN_FILENO, TCSANOW, &newt);
-oldf = fcntl(STDIN_FILENO, F_GETFL, 0);
-fcntl(STDIN_FILENO, F_SETFL, oldf | O_NONBLOCK);
-
-ch = getchar();
-
-tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
-fcntl(STDIN_FILENO, F_SETFL, oldf);
-
-if(ch != EOF) {
-ungetc(ch, stdin);
-return 1;
-}
-
-return 0;
-} // int kbhit(void)
-*/
-
-/*
 void insert_playername(int a) { // 시작 시 플레이어 이름 입력
-int i;
-for (i=0 ; i<PLAYER ; i++){
-printf("플레이어%d 이름 입력 : ", i+1);
-scanf("%s", player[i].name);
-} // for
+gotoxy(15, 25);
+printf("플레이어%d 이름 입력 : ", 1);
+scanf("%s", player[0].name);
+
+gotoxy(15, 26);
+printf("플레이어%d 이름 입력 : ", 2);
+scanf("%s", player[1].name);
 } // void insert_playername
-*/
+
 
 
 void finish_bonus(int a) { // 시작점에 도착해서 완주 시
@@ -612,6 +612,7 @@ printf("[%s]님의 차례입니다.\n", player[a].name);
 gotoxy(15,26);
 printf("주사위를 굴려주세요.\n");
 getch();
+sleep(1);
 GREEN; // 주사위 색깔
 dice_print(); // 주사위 굴리고 뭐가 나왔는지 시각적으로 보여주고
 gotoxy(15,27);
@@ -651,14 +652,6 @@ gotoxy(15,26);
 printf("주사위를 굴려주세요.\n");
 
 getch(); // 키보드가 입력되면
-gotoxy(15,25);
-printf("                                                         \n");
-gotoxy(15,26);
-printf("                                                         \n");
-gotoxy(15,27);
-printf("                                                         \n");
-gotoxy(15,28);
-printf("                                                         \n"); // 공지란도 지우고
 gotoxy(34,15);
 printf("                               ");
 gotoxy(34,16);
@@ -668,7 +661,7 @@ printf("                               ");
 gotoxy(34,18);
 printf("                               ");
 gotoxy(34,19);
-printf("                               "); // 주사위도 지운다
+printf("                               ");
 
 d = dice_cast();
 sleep(1); // 1초 후에
@@ -850,14 +843,6 @@ break;
 
 void trade(int a) { // 도시구매 // 주택, 빌라, 아파트 건설 // 통행료 납부 거래
 BLUE; // 공지 색
-gotoxy(15,25);
-printf("                                                         \n");
-gotoxy(15,26);
-printf("                                                         \n");
-gotoxy(15,27);
-printf("                                                         \n");
-gotoxy(15,28);
-printf("                                                         \n");
 // 1. 플레이어의 위치가 시작
 if(!strcmp(city[player[a].position].name, "시작")) { // 플레이어가 위치한 칸의 이름이 시작이면
 return;
@@ -865,12 +850,23 @@ return;
 
 // 2. 플레이어의 위치가 황금열쇠
 else if (!strcmp(city[player[a].position].name, "황금열쇠")) {
+sleep(1);
 gold_key(a); // 황금열쇠 함수 호출
 } // else if 황금열쇠
 
 // 3. 플레이어의 위치가 무인도
 else if(!strcmp(city[player[a].position].name, "무인도")) {
 player[a].rest = 3;
+gotoxy(34,15);
+printf("                               ");
+gotoxy(34,16);
+printf("                               ");
+gotoxy(34,17);
+printf("                               ");
+gotoxy(34,18);
+printf("                               ");
+gotoxy(34,19);
+printf("                               ");
 island(a);
 } // else if 무인도
 
@@ -1248,7 +1244,7 @@ player[0].money += mna_price;
 } // void mna(int a)
 
 
-void island(int a){ // island // 플레이어의 위치가 island일때 호출됨
+void island(int a) { // island // 플레이어의 위치가 island일때 호출됨
 if (player[a].rest >= 1) {
 gotoxy(15,25);
 printf("[%s]님은 무인도에 갖혔습니다.\n", player[a].name);
@@ -1389,8 +1385,10 @@ BLUE;
 printmap();
 printna();
 
-int i = 0;
 
+int i = 0;
+insert_playername(i);
+clear();
 player_state();
 
 while(1) {
@@ -1412,20 +1410,5 @@ i++;
 } // while(1) -> 무한루프
 
 }
-
-void print_information(int a) { // 도시이름 도시소유자 도시발전도 사회복지기금
-int i;
-for(i=0 ; i<BOARD ; i++) {
-printf("[%s]\n", city[i].name);
-printf("도시 소유자 : %s\n", city[i].owner);
-printf("도시 발전도 : %d\n", city[i].development_level);
-} //for(i=0 ; i<BOARD ; i++)
-printf("여러분의 열화와 같은 성원에 모금한 사회복지기금 : %d만원\n\n", welfare);
-} // city_information(int a)
-// ㅅ누서 랜덤으로 정하는거
-// ㅅ예 아니요 선택하는거
-// 파산검사후 엔딩
-// 그 뭐냐 무인도 어디에 있어야하지 ㅅㅂ..
-// 메인
 
 
