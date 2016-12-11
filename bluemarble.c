@@ -626,7 +626,7 @@ for(i=0 ; i < dice_num_sum ;  i++) {
 gotoxy(city[player[a].position].x[a], city[player[a].position].y[a]); // 플레이어의 말이 현재 위치한 곳에 가서
 printf("  "); // 말 지나간 자리 지우기
 
-if(player[a].position == 25) { // 플레이어가 마지막 말판에 도착하게 되면 // 이부분 나중에 말판 갯수로 고치기
+if(player[a].position > 25) { // 플레이어가 마지막 말판에 도착하게 되면
 player[a].position = 0; // 시작 위치로 돌아오고
 finish_bonus(a); // 완주 보너스 지급
 sleep(2);
@@ -901,7 +901,7 @@ else if(!strcmp(city[player[a].position].name, "독도")) {
 // 1) 독도의 소유자가 없는 상태일 경우
 if(!strcmp(city[player[a].position].owner, "없음")) { // 독도의 소유권이 없는 상태라면
 gotoxy(15,25);
-printf("[독도]가 비어있습니다.\n", city[player[a].position].name);
+printf("[독도]가 비어있습니다.\n");
 gotoxy(15,26);
 printf("[%d만원]을 지불하고 독도를 구매하겠습니까?\n", city[player[a].position].development[0]); // 독도구매 금액
 
