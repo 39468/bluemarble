@@ -57,7 +57,7 @@ int   main( void)
          printf( "클라이언트 연결 수락 실패n");
          exit( 1);
       }
-      _beginthread(recv_client,0,&client_socket);
+//      _beginthread(recv_client,0,&client_socket);
       char msg[BUFF_SIZE+5];
 
       read ( client_socket, msg, BUFF_SIZE);
@@ -77,7 +77,7 @@ int   main( void)
    
 
 }
-
+/*
 void recv_client(void *sock){
 
 int ret,i;
@@ -106,3 +106,4 @@ printf("join");
 close(client_socket);
 
 }
+*/
